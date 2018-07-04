@@ -1,13 +1,14 @@
 package com.shopfic.dao;
-import java.util.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.shopfic.model.Product;
 import com.shopfic.model.ProductDetailed;
 
 public class ProductDao extends MainDao{
@@ -48,7 +49,7 @@ public class ProductDao extends MainDao{
 		addProduct(prod);
 		return true;
 	}
-	public ProductDetailed getProduct(int pid){
+	public ProductDetailed getProductDetailed(int pid){
 		ProductDetailed pd = new ProductDetailed();
 		String query = "SELECT * FROM product WHERE pid=?";
 		String query_category = "SELECT * FROM category WHERE cid=?";
@@ -183,5 +184,150 @@ public class ProductDao extends MainDao{
 			System.out.println("In Product Dao : deleteProduct : "+e);
 		}
 		return false;
+	}
+	public Product getProduct(int pid){
+		Product prod = new Product();
+		String query_product = "SELECT * FROM product WHERE pid=?";
+		String query_image = "SELECT * FROM images WHERE pid=?";
+		try {
+			PreparedStatement pst = conn.prepareStatement(query_product);
+			pst.setInt(1, pid);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			prod.setName(rs.getString("name"));
+			prod.setPid(rs.getInt("pid"));
+			prod.setPrice(rs.getDouble("price"));
+			prod.setDiscount(rs.getDouble("discount"));
+			prod.setCost();
+			prod.setShort_description(rs.getString("short_description"));
+			pst.close();
+			pst = conn.prepareStatement(query_product);
+			pst.setInt(1, pid);
+			rs = pst.executeQuery();
+			if(rs.next())prod.setImage_path(rs.getString("path"));
+			//st.executeUpdate(query_subcategory);
+			//st.close();
+			pst.close();
+			conn.close();
+			return prod;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : getProduct : "+e);
+		}
+		return null;
+	}
+	public List<Product> getProductsSid(int sid){
+		List<Product> list = new ArrayList<Product>();
+		String query = "SELECT pid FROM product WHERE sid=?";
+		try {
+			PreparedStatement pst = conn.prepareStatement(query);
+			pst.setInt(1, sid);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next()){
+				list.add(getProduct(rs.getInt("pid")));
+			}
+			pst.close();
+			conn.close();
+			return list;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : getProductsSid : "+e);
+		}
+		return null;
+	}
+	public List<Product> getProductsCategory(String category){
+		List<Product> list = new ArrayList<Product>();
+		int cid,csid;
+		String query_cid = "SELECT cid FROM category WHERE name=?";
+		String query_csid = "SELECT csid FROM subcategory WHERE cid=?";
+		String query_pid = "SELECT pid FROM product WHERE csid=?";
+		try {
+			PreparedStatement pst = conn.prepareStatement(query_cid);
+			PreparedStatement pst2 = conn.prepareStatement(query_pid);
+			pst.setString(1, category);
+			ResultSet rs = pst.executeQuery();
+			ResultSet rs2;
+			rs.next();
+			cid = rs.getInt("cid");
+			pst.close();
+			
+			pst = conn.prepareStatement(query_csid);
+			pst.setInt(1, cid);
+			rs = pst.executeQuery();
+			while(rs.next()){
+				csid = rs.getInt("csid");
+				pst2 = conn.prepareStatement(query_pid);
+				pst2.setInt(1, csid);
+				rs2 = pst.executeQuery();
+				while(rs2.next()){
+					list.add(getProduct(rs2.getInt("pid")));
+				}
+				pst2.close();
+			}
+			pst.close();
+			conn.close();
+			return list;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : getProductsCategory : "+e);
+		}
+		return null;
+	}
+	public List<Product> getProductsSubcategory(String category,String subcategory){
+		List<Product> list = new ArrayList<Product>();
+		int cid,csid;
+		String query_cid = "SELECT cid FROM category WHERE name=?";
+		String query_csid = "SELECT csid FROM subcategory WHERE cid=? AND name=?";
+		String query_pid = "SELECT pid FROM product WHERE csid=?";
+		try {
+			PreparedStatement pst = conn.prepareStatement(query_cid);
+			pst.setString(1, category);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			cid = rs.getInt("cid");
+			pst.close();
+			pst = conn.prepareStatement(query_csid);
+			pst.setInt(1, cid);
+			pst.setString(2, subcategory);
+			rs = pst.executeQuery();
+			rs.next();
+			csid = rs.getInt("csid");
+			pst.close();
+			pst = conn.prepareStatement(query_pid);
+			pst.setInt(1, csid);
+			rs = pst.executeQuery();
+			while(rs.next()){
+				list.add(getProduct(rs.getInt("pid")));
+			}
+			pst.close();
+			conn.close();
+			return list;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : getProduct : "+e);
+		}
+		return null;
+
+	}
+	public List<Product> getProductsSearch(String pattern){
+		List<Product> list = new ArrayList<Product>();
+		String query = "SELECT pid FROM product WHERE name LIKE ?";
+		try {
+			PreparedStatement pst = conn.prepareStatement(query);
+			pattern+="%";
+			pst.setString(1, pattern);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next()){
+				list.add(getProduct(rs.getInt("pid")));
+			}
+			pst.close();
+			conn.close();
+			return list;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : getProductsSearch : "+e);
+		}
+		return null;
+
 	}
 }
