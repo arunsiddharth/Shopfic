@@ -5,10 +5,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class tester {
-	@RequestMapping(value="t")
-	public ModelAndView test(){
-		ModelAndView mv = new ModelAndView("index");
+@RequestMapping("seller")
+public class Seller {
+	@RequestMapping("index")
+	public ModelAndView sellerIndex(){
+		ModelAndView mv = new ModelAndView();
+		
 		return mv;
 	}
 }
