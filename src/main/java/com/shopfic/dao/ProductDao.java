@@ -14,6 +14,7 @@ import com.shopfic.model.ProductDetailed;
 public class ProductDao extends MainDao{
 	
 	public Map<String,Map<String,Integer> > getList(){
+		//Returns list of categories and subcategories
 		String query_category = "SELECT * FROM category";
 		String query_subcategory = "SELECT * FROM subcategory WHERE cid=(?)";
 		Map<String, Map<String,Integer> > result = new HashMap<String, Map<String,Integer> >();
@@ -34,8 +35,8 @@ public class ProductDao extends MainDao{
 				}
 				result.put(rs.getString("name"), sub_result);
 			}
-			st.close();
-			conn.close();
+			//st.close();
+			//conn.close();
 			return result;
 		} catch (SQLException e) {
 			System.out.println("In Product Dao : getList : "+e);
@@ -61,6 +62,7 @@ public class ProductDao extends MainDao{
 			pst.setInt(1, pid);
 			ResultSet rs = pst.executeQuery();
 			rs.next();
+			pd.setPid(pid);
 			pd.setName(rs.getString("name"));
 			pd.setPrice(rs.getDouble("price"));
 			pd.setCsid(rs.getInt("csid"));
@@ -72,19 +74,19 @@ public class ProductDao extends MainDao{
 			pd.setDiscount(rs.getDouble("discount"));
 			pd.setFeatures(rs.getString("features"));
 			pd.setCost();
-			pst.close();
+			//pst.close();
 			pst = conn.prepareStatement(query_subcategory);
 			pst.setInt(1, pd.getCsid());
 			rs = pst.executeQuery();
 			rs.next();
 			pd.setSubcategory(rs.getString("name"));
-			pst.close();
+			//pst.close();
 			pst = conn.prepareStatement(query_category);
 			pst.setInt(1, rs.getInt("cid"));
 			rs = pst.executeQuery();
 			rs.next();
 			pd.setCategory(rs.getString("name"));
-			pst.close();
+			//pst.close();
 			pst = conn.prepareStatement(query_images);
 			pst.setInt(1, pid);
 			rs = pst.executeQuery();
@@ -96,7 +98,7 @@ public class ProductDao extends MainDao{
 			pd.setImages(list);
 			return pd;
 		} catch (SQLException e) {
-			System.out.println("In Product Dao : getProduct : "+e);
+			System.out.println("In Product Dao : getProductDetailed : "+e);
 		}
 		return null;
 	}
@@ -105,10 +107,10 @@ public class ProductDao extends MainDao{
 		//insert into product and images + update subcategory
 		//get csid
 		int cid,csid,pid;
-		String query_cid = "SELECT cid FROM category WHERE category=?";
-		String query_csid = "SELECT csid FROM subcategory WHERE cid=? AND subcategory=?";
+		String query_cid = "SELECT cid FROM category WHERE name=?";
+		String query_csid = "SELECT csid FROM subcategory WHERE cid=? AND name=?";
 		String query_product = "INSERT INTO product(name,price,discount,features,stock,csid,brand,version,sid,short_description) VALUES(?,?,?,?,?,?,?,?,?,?)";
-		String query_pid = "SELECT COUNT(*) FROM product";
+		String query_pid = "SELECT pid FROM product ORDER BY pid DESC LIMIT 1";
 		String query_images = "INSERT INTO images(pid,path) VALUES(?,?)";
 		String query_subcategory= "UPDATE subcategory SET count=count+1 WHERE name=?";
 		try{
@@ -124,6 +126,7 @@ public class ProductDao extends MainDao{
 			pst = conn.prepareStatement(query_csid);
 			pst.setInt(1, cid);
 			pst.setString(2, p.getSubcategory());
+			System.out.println(cid+" "+p.getSubcategory());
 			rs = pst.executeQuery();
 			rs.next();
 			csid = rs.getInt("csid");
@@ -141,8 +144,8 @@ public class ProductDao extends MainDao{
 			pst.setInt(9, p.getSid());
 			pst.setString(10, p.getShort_description());
 			int count = pst.executeUpdate();
-			pst.close();
-			
+			//pst.close();
+
 			rs = st.executeQuery(query_pid);
 			rs.next();
 			pid = rs.getInt(1);
@@ -156,8 +159,8 @@ public class ProductDao extends MainDao{
 			pst = conn.prepareStatement(query_subcategory);
 			pst.setString(1, p.getSubcategory());
 			pst.executeUpdate();
-			pst.close();
-			conn.close();
+			//pst.close();
+			//conn.close();
 			return true;
 		}catch (SQLException e) {
 			System.out.println("In Product Dao : addProduct : "+e);
@@ -166,18 +169,26 @@ public class ProductDao extends MainDao{
 	}
 	
 	public boolean deleteProduct(int pid){
+		int csid;
+		String query = "SELECT csid FROM product WHERE pid=?";
 		String query_del = "DELETE FROM product WHERE pid=?";
-		String query_subcategory = "UPDATE subcategory SET COUNT=COUNT-1";
+		String query_subcategory = "UPDATE subcategory SET COUNT=COUNT-1 WHERE csid=?";
 		PreparedStatement pst;
 		try {
+			pst = conn.prepareStatement(query);
+			pst.setInt(1, pid);
+			ResultSet rs = pst.executeQuery();
+			rs.next();
+			csid = rs.getInt("csid");
 			pst = conn.prepareStatement(query_del);
-			Statement st = conn.createStatement();
 			pst.setInt(1, pid);
 			pst.executeUpdate();
-			st.executeUpdate(query_subcategory);
-			st.close();
-			pst.close();
-			conn.close();
+			pst = conn.prepareStatement(query_subcategory);
+			pst.setInt(1, csid);
+			pst.executeUpdate(query_subcategory);
+			//st.close();
+			//pst.close();
+			//conn.close();
 			return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -200,15 +211,13 @@ public class ProductDao extends MainDao{
 			prod.setDiscount(rs.getDouble("discount"));
 			prod.setCost();
 			prod.setShort_description(rs.getString("short_description"));
-			pst.close();
-			pst = conn.prepareStatement(query_product);
+			//pst.close();
+			pst = conn.prepareStatement(query_image);
 			pst.setInt(1, pid);
 			rs = pst.executeQuery();
 			if(rs.next())prod.setImage_path(rs.getString("path"));
 			//st.executeUpdate(query_subcategory);
 			//st.close();
-			pst.close();
-			conn.close();
 			return prod;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -226,12 +235,30 @@ public class ProductDao extends MainDao{
 			while(rs.next()){
 				list.add(getProduct(rs.getInt("pid")));
 			}
-			pst.close();
-			conn.close();
+			//pst.close();
+			//conn.close();
 			return list;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.out.println("In Product Dao : getProductsSid : "+e);
+		}
+		return list;
+	}
+	public List<Product> getProductsLatest(){
+		List<Product> list = new ArrayList<Product>();
+		String query_pid = "SELECT pid FROM product ORDER BY pid desc LIMIT 10";
+		try {
+			PreparedStatement pst = conn.prepareStatement(query_pid);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next()){
+				list.add(getProduct(rs.getInt("pid")));
+			}
+			//pst.close();
+			//conn.close();
+			return list;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : getProductsLatest : "+e);
 		}
 		return null;
 	}
@@ -264,8 +291,8 @@ public class ProductDao extends MainDao{
 				}
 				pst2.close();
 			}
-			pst.close();
-			conn.close();
+			//pst.close();
+			//conn.close();
 			return list;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -299,12 +326,12 @@ public class ProductDao extends MainDao{
 			while(rs.next()){
 				list.add(getProduct(rs.getInt("pid")));
 			}
-			pst.close();
-			conn.close();
+			//pst.close();
+			//conn.close();
 			return list;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			System.out.println("In Product Dao : getProduct : "+e);
+			System.out.println("In Product Dao : getProductSubcategory : "+e);
 		}
 		return null;
 
@@ -320,14 +347,13 @@ public class ProductDao extends MainDao{
 			while(rs.next()){
 				list.add(getProduct(rs.getInt("pid")));
 			}
-			pst.close();
-			conn.close();
+			//pst.close();
+			//conn.close();
 			return list;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			System.out.println("In Product Dao : getProductsSearch : "+e);
 		}
 		return null;
-
 	}
 }

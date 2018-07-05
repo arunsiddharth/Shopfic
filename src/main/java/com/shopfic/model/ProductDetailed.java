@@ -10,6 +10,11 @@ public class ProductDetailed extends Product {
 	String version;
 	String category;
 	String subcategory;
+	int sid;
+	String date_added;
+	int stock;
+	String message;
+	List<String> images = new ArrayList<String>();
 	public String getCategory() {
 		return category;
 	}
@@ -22,11 +27,6 @@ public class ProductDetailed extends Product {
 	public void setSubcategory(String subcategory) {
 		this.subcategory = subcategory;
 	}
-	int sid;
-	String date_added;
-	int stock;
-	String message;
-	List<String> images = new ArrayList<String>();
 	
 	public List<String> getImages() {
 		return images;

@@ -33,7 +33,10 @@ public class Product {
 		this.discount = discount;
 	}
 	public void setCost() {
-		this.cost = price-discount;
+		this.cost = this.price-this.discount;
+	}
+	public double getCost() {
+		return cost;
 	}
 	public String getImage_path() {
 		return image_path;

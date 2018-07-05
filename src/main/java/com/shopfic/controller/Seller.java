@@ -1,6 +1,8 @@
 package com.shopfic.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.shopfic.model.Product;
+import com.shopfic.model.ProductDetailed;
 import com.shopfic.service.ProductService;
 
 @Controller
@@ -25,18 +28,41 @@ public class Seller {
 		ProductService ps = new ProductService();
 		int sid = Integer.parseInt(session.getAttribute("sid").toString());//chance of error
 		List<Product> list = ps.productSeller(sid);
+		mv.addObject("products", list);
 		return mv;
 	}
 	@RequestMapping(value="add", method=RequestMethod.GET)
 	public ModelAndView addProduct(HttpServletRequest request, HttpServletResponse response){
 		HttpSession session= request.getSession();
-		if(session.getAttribute("sid")==null)return new ModelAndView("redirect:/index");
-		ModelAndView mv = new ModelAndView("add");
+		//if(session.getAttribute("sid")==null)return new ModelAndView("redirect:/index");
+		ModelAndView mv = new ModelAndView("addproduct");
+		ProductService ps = new ProductService();
+		Map<String,Map<String,Integer> > hm = ps.productList();
+		mv.addObject("list",hm);
 		return mv;
 	}
 	@RequestMapping(value="add", method=RequestMethod.POST)
 	public ModelAndView doAddProduct(HttpServletRequest request, HttpServletResponse response){
-		ModelAndView mv = new ModelAndView();
+		int sid = Integer.parseInt(request.getSession().getAttribute("sid").toString());
+		System.out.println("SID IS"+sid);
+		ProductService ps=new ProductService();
+		ProductDetailed prod = new ProductDetailed();
+		prod.setName(request.getParameter("name"));
+		prod.setPrice(Double.parseDouble(request.getParameter("price")));
+		prod.setDiscount(Double.parseDouble(request.getParameter("discount")));
+		prod.setStock(Integer.parseInt(request.getParameter("stock")));
+		prod.setCategory(request.getParameter("category"));
+		prod.setSubcategory(request.getParameter("subcategory"));
+		prod.setBrand(request.getParameter("brand"));
+		prod.setVersion(request.getParameter("version"));
+		prod.setShort_description(request.getParameter("short_description"));
+		prod.setFeatures(request.getParameter("features"));
+		//prod.setImage_path(request.getParameter("images"));
+		List<String> images = new ArrayList<String>();
+		images.add(request.getParameter("images"));
+		prod.setImages(images);
+		prod.setSid(sid);
+		ps.addProduct(prod);
 		return new ModelAndView("redirect:/seller/index");
 	}
 	@RequestMapping(value="delete", method=RequestMethod.GET)
@@ -44,17 +70,46 @@ public class Seller {
 		HttpSession session= request.getSession();
 		if(session.getAttribute("sid")==null)return new ModelAndView("redirect:/index");
 		ModelAndView mv = new ModelAndView();
-		return mv;
+		int pid = Integer.parseInt(request.getParameter("pid"));
+		ProductService ps = new ProductService();
+		ps.deleteProduct(pid);
+		return new ModelAndView("redirect:/seller/index");
 	}
 	@RequestMapping(value="update", method=RequestMethod.GET)
-	public ModelAndView updateProduct(){
-		ModelAndView mv = new ModelAndView("update");
+	public ModelAndView updateProduct(HttpServletRequest request, HttpServletResponse response){
+		HttpSession session= request.getSession();
+		if(session.getAttribute("sid")==null)return new ModelAndView("redirect:/index");
+		int pid = Integer.parseInt(request.getParameter("pid"));
+		ModelAndView mv = new ModelAndView("updateproduct");
+		ProductDetailed prod = new ProductDetailed();
+		ProductService ps = new ProductService();
+		prod = ps.getProductDetailed(pid);
+		mv.addObject("product",prod);
+		Map<String,Map<String,Integer> > hm = ps.productList();
+		mv.addObject("list",hm);
 		return mv;
 	}
 	@RequestMapping(value="update", method=RequestMethod.POST)
 	public ModelAndView doUpdateProduct(HttpServletRequest request, HttpServletResponse response){
 		HttpSession session= request.getSession();
 		if(session.getAttribute("sid")==null)return new ModelAndView("redirect:/index");
+		//add sid
+		int pid = Integer.parseInt(request.getParameter("pid"));
+		ProductDetailed product = new ProductDetailed();
+		ProductService ps = new ProductService();
+		product = ps.getProductDetailed(pid);
+		if(!request.getParameter("name").equals(product.getName()))product.setName(request.getParameter("name"));
+		if(!request.getParameter("price").equals(product.getPrice()))product.setPrice(Double.parseDouble(request.getParameter("price")));
+		if(!request.getParameter("discount").equals(product.getDiscount()))product.setDiscount(Double.parseDouble(request.getParameter("discount")));
+		if(!request.getParameter("features").equals(product.getFeatures()))product.setFeatures(request.getParameter("features"));
+		if(!request.getParameter("stock").equals(product.getStock()))product.setStock(Integer.parseInt(request.getParameter("stock")));
+		if(!request.getParameter("category").equals(product.getCategory()))product.setCategory(request.getParameter("category"));
+		if(!request.getParameter("subcategory").equals(product.getSubcategory()))product.setSubcategory(request.getParameter("subcategory"));
+		if(!request.getParameter("brand").equals(product.getBrand()))product.setBrand(request.getParameter("brand"));
+		if(!request.getParameter("version").equals(product.getVersion()))product.setVersion(request.getParameter("version"));
+		if(!request.getParameter("short_description").equals(product.getShort_description()))product.setShort_description(request.getParameter("short_description"));
+		product.setSid(Integer.parseInt(session.getAttribute("sid").toString()));
+		ps.updateProduct(product);
 		return new ModelAndView("redirect:/seller/index");
 	}
 }

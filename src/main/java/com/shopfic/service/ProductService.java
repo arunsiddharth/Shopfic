@@ -24,6 +24,13 @@ public class ProductService {
 		list = pd.getProductsSid(sid);
 		return list;
 	}
+	public List<Product> productsLatest(){
+		List<Product> list = null;
+		ProductDao pd = new ProductDao();
+		pd.connect();
+		list = pd.getProductsLatest();
+		return list;
+	}
 	public List<Product> productsCategory(String category){
 		//gives list of products on basis of category specified
 		List<Product> list = null;

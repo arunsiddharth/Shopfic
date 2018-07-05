@@ -17,19 +17,19 @@ import com.shopfic.service.UserService;
 
 @Controller
 public class LoginAndRegisterController {
-	@RequestMapping(value="login",method=RequestMethod.GET)
-	public ModelAndView showLogin(){
+	@RequestMapping(value={"login","seller/login"},method=RequestMethod.GET)
+	public ModelAndView showLogin(HttpServletRequest request,HttpServletResponse response){
 		ModelAndView mv = new ModelAndView("login");
 		return mv;
 	}
 	
-	@RequestMapping(value="register",method=RequestMethod.GET)
-	public ModelAndView showRegister(){
+	@RequestMapping(value={"register","seller/register"},method=RequestMethod.GET)
+	public ModelAndView showRegister(HttpServletRequest request,HttpServletResponse response){
 		ModelAndView mv = new ModelAndView("register");
 		return mv;
 	}
 	
-	@RequestMapping(value="login",method=RequestMethod.POST)
+	@RequestMapping(value={"login","seller/login"},method=RequestMethod.POST)
 	public ModelAndView doLogin(HttpServletRequest request,HttpServletResponse response){
 		ModelAndView mv = new ModelAndView();
 		String email = request.getParameter("email");
@@ -50,7 +50,7 @@ public class LoginAndRegisterController {
 		return mv;
 	}
 	
-	@RequestMapping(value="register",method=RequestMethod.POST)
+	@RequestMapping(value={"register","seller/register"},method=RequestMethod.POST)
 	public ModelAndView doRegister(HttpServletRequest request,HttpServletResponse response){
 		ModelAndView mv = new ModelAndView();
 		User user = new User();
@@ -92,12 +92,11 @@ public class LoginAndRegisterController {
 		return mv;
 	}
 	
-	@RequestMapping(value="Logout")
+	@RequestMapping(value={"logout","seller/logout"})
 	public ModelAndView logout(HttpServletRequest request,HttpServletResponse response){
-		ModelAndView mv = new ModelAndView("index");
 		UserService us = new UserService();
 		HttpSession session = request.getSession();
 		us.logout(session);
-		return mv;
+		return new ModelAndView("redirect:/login");
 	}
 }
