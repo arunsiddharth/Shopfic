@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.shopfic.dao.ProductDao;
+import com.shopfic.model.Comment;
 import com.shopfic.model.Product;
 import com.shopfic.model.ProductDetailed;
+import com.shopfic.model.Rating;
 
 public class ProductService {
 	
@@ -80,5 +82,16 @@ public class ProductService {
 		ProductDao pd = new ProductDao();
 		pd.connect();
 		pd.deleteProduct(pid);
+	}
+	public Rating productRating(int pid){
+		ProductDao pd = new ProductDao();
+		pd.connect();
+		Rating rating = pd.getProductRating(pid);
+		return rating;
+	}
+	public void setProductRating(Comment c){
+		ProductDao pd = new ProductDao();
+		pd.connect();
+		pd.addRating(c);
 	}
 }

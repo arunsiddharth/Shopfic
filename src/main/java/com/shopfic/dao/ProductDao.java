@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.shopfic.model.Comment;
 import com.shopfic.model.Product;
 import com.shopfic.model.ProductDetailed;
+import com.shopfic.model.Rating;
 
 public class ProductDao extends MainDao{
 	
@@ -277,7 +279,6 @@ public class ProductDao extends MainDao{
 			rs.next();
 			cid = rs.getInt("cid");
 			pst.close();
-			
 			pst = conn.prepareStatement(query_csid);
 			pst.setInt(1, cid);
 			rs = pst.executeQuery();
@@ -355,5 +356,58 @@ public class ProductDao extends MainDao{
 			System.out.println("In Product Dao : getProductsSearch : "+e);
 		}
 		return null;
+	}
+	public Rating getProductRating(int pid){
+		Rating ratings = new Rating();
+		List<Comment> comments = new ArrayList<Comment>();
+		double rating = 0;
+		int count=0;
+		ratings.setPid(pid);
+		String query_rating = "SELECT * FROM rating WHERE pid=?";
+		String query_name = "SELECT firstname,lastname FROM user WHERE uid=?";
+		try {
+			PreparedStatement pst = conn.prepareStatement(query_rating);
+			PreparedStatement pst2 = conn.prepareStatement(query_name);
+			pst.setInt(1, pid);
+			ResultSet rs = pst.executeQuery();
+			ResultSet rs2;
+			while(rs.next()){
+				Comment c = new Comment();
+				c.setDate(rs.getString("date"));
+				c.setComment(rs.getString("comment"));
+				c.setUid(rs.getInt("uid"));
+				pst2.setInt(1, c.getUid());
+				rs2 = pst2.executeQuery();
+				if(rs2.next())c.setName(rs2.getString("firstname")+" "+rs2.getString("lastname"));
+				c.setRating(rs.getInt("rating"));
+				rating+=c.getRating();
+				count++;
+				comments.add(c);
+			}
+			if(count>0)rating = rating/count;
+			ratings.setRating(rating);
+			ratings.setComments(comments);
+			return ratings;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : getProductsRating : "+e);
+		}
+		return ratings;
+	}
+	public boolean addRating(Comment c){
+		String query_rating = "INSERT INTO rating(pid,uid,rating,comment) VALUES(?,?,?,?)";
+		try {
+			PreparedStatement pst = conn.prepareStatement(query_rating);
+			pst.setInt(1, c.getPid());
+			pst.setInt(2, c.getUid());
+			pst.setDouble(3, c.getRating());
+			pst.setString(4, c.getComment());
+			pst.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : addRating : "+e);
+		}
+		return false;
 	}
 }
