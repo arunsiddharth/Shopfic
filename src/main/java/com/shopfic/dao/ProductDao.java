@@ -211,6 +211,7 @@ public class ProductDao extends MainDao{
 			prod.setPid(rs.getInt("pid"));
 			prod.setPrice(rs.getDouble("price"));
 			prod.setDiscount(rs.getDouble("discount"));
+			prod.setStock(rs.getInt("stock"));
 			prod.setCost();
 			prod.setShort_description(rs.getString("short_description"));
 			//pst.close();

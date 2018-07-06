@@ -16,6 +16,13 @@ ${product.version}<br/>
 ${product.short_description}<br/>
 ${product.features}<br/>
 ${product.image_path}<br/>
+Add To Cart :
+<form action="addcart" method="post">
+	<input type="text" name="pid" value="${product.pid}"/><br/>
+	<input type="number" min=0 name="count" value="${product.pid}"/><br/>
+	<input type="submit" value="Add to Cart"/><br/>
+</form>
+
 
 Rating And Comments :
 <form action="addrating" method="post">

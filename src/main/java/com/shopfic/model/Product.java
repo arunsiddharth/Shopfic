@@ -8,6 +8,16 @@ public class Product {
 	double cost;
 	String image_path;
 	String short_description;
+	int stock;
+	public int getStock() {
+		return stock;
+	}
+	public void setStock(int stock) {
+		this.stock = stock;
+	}
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
 	public int getPid() {
 		return pid;
 	}

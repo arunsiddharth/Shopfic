@@ -79,5 +79,9 @@ public class Cart extends Product{
 	public void setDate_brought(String date_brought) {
 		this.date_brought = date_brought;
 	}
+	@Override
+	public String toString() {
+		return "Cart [uid=" + uid + ", pid=" + pid + ", count=" + count + "]";
+	}
 	
 }

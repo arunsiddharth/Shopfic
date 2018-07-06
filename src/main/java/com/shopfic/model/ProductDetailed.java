@@ -12,7 +12,6 @@ public class ProductDetailed extends Product {
 	String subcategory;
 	int sid;
 	String date_added;
-	int stock;
 	String message;
 	List<String> images = new ArrayList<String>();
 	public String getCategory() {
@@ -69,12 +68,6 @@ public class ProductDetailed extends Product {
 	}
 	public void setDate_added(String date_added) {
 		this.date_added = date_added;
-	}
-	public int getStock() {
-		return stock;
-	}
-	public void setStock(int stock) {
-		this.stock = stock;
 	}
 	public String getMessage() {
 		if(this.stock<=0)message="Out of Stock";

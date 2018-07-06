@@ -18,6 +18,7 @@
 		}
 		
 	%>
+	<a href="index">Home</a>
 	<form action="search" method="get">
 	<input type="text" name="pattern"/>
 	<input type="submit" value="Search"/>
