@@ -127,18 +127,22 @@ public class Seller {
 		if(view_requested.equals("prf")){
 			mv.addObject("oos","false");
 			n=cs.notificationProductRequestFulfilled(sid);
+			mv.addObject("marker", "false");
 		}
 		else if(view_requested.equals("pr")){
 			mv.addObject("oos","false");
 			n=cs.notificationProductRequest(sid);
+			mv.addObject("marker", "true");
 		}
 		else if(view_requested.equals("prp")){
 			mv.addObject("oos","false");
 			n=cs.notificationProductRequestPending(sid);
+			mv.addObject("marker", "false");
 		}
 		else {
 			mv.addObject("oos","true");
 			n=cs.notificationOutOfStock(sid);
+			mv.addObject("marker", "false");
 		}
 		mv.addObject("notification",n);
 		return mv;
@@ -149,6 +153,6 @@ public class Seller {
 		int sid = Integer.parseInt(session.getAttribute("sid").toString());
 		CartService cs = new CartService();
 		cs.mark(sid);
-		return new ModelAndView("redirect:/notification?view=prp");
+		return new ModelAndView("redirect:/seller/notification?view=prp");
 	}
 }

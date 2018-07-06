@@ -17,21 +17,22 @@
 		No Notifications
 	</c:if>
 	<c:forEach items="${notification}" var="note">
-		Product Name : ${notification.name}<br/>
-		Product Cost : ${notification.cost}<br/>
-		Product Stock : ${notification.stock}<br/>
+		Product Name : ${note.name}<br/>
+		Product Cost : ${note.cost}<br/>
+		Product Stock : ${note.stock}<br/>
 		<c:if test="${oos!='true'}">
-		Purchase Mode : ${notification.cod}<br/>
-		Amount Requested : ${notification.count}<br/>
-		Date of Order : ${notification.date_request}<br/>
-		Name : ${notification.user.firstname}&nbsp;${notification.user.lastname}<br/>
-		Homephone : ${notification.user.homephone}<br/>
-		Address : ${notification.user.address.address1}&nbsp;${notification.user.address.address2}<br/>
-		City : ${notification.user.address.city}<br/>
-		State : ${notification.user.address.state}<br/>
-		Country : ${notification.user.address.country}<br/>
-		ZIP : ${notification.user.address.zip}<hr/>
+		Purchase Mode : <c:if test="${note.cod=='1'}">COD</c:if><c:if test="${note.cod=='0'}">Online</c:if><br/>
+		Amount Requested : ${note.count}<br/>
+		Date of Order : ${note.date_request}<br/>
+		Name : ${note.user.firstname}&nbsp;${note.user.lastname}<br/>
+		Homephone : ${note.user.homephone}<br/>
+		Address : ${note.user.address.address1}&nbsp;${note.user.address.address2}<br/>
+		City : ${note.user.address.city}<br/>
+		State : ${note.user.address.state}<br/>
+		Country : ${note.user.address.country}<br/>
+		ZIP : ${note.user.address.zip}<hr/>
 		</c:if>
 	</c:forEach>
+	<c:if test="${marker && fn:length(notification) gt 0}"><a href="productsmark">MARK</a></c:if>
 </body>
 </html>

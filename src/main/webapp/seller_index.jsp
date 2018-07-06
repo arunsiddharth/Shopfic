@@ -18,7 +18,7 @@
 	%>
 	<br/><a href="add">Add</a><br/>
 	<a href="viewprofile">View Profile</a><br/>
-	<a href="notification">Notification</a><br/>
+	<a href="notification?view=oos">Notification</a><br/>
 	<a href="index">Home</a><br/>
 	<a href="logout">Logout</a><br/><br/>
 	

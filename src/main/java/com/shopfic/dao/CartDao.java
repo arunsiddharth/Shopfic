@@ -213,6 +213,7 @@ public class CartDao extends MainDao {
 				n.setName(rs.getString("name"));
 				n.setDiscount(rs.getDouble("discount"));
 				n.setPrice(rs.getDouble("price"));
+				n.setStock(rs.getInt("stock"));
 				n.setCost();
 				n.setBrand(rs.getString("brand"));
 				n.setVersion(rs.getString("version"));
@@ -258,6 +259,7 @@ public class CartDao extends MainDao {
 						n.setDiscount(rs.getDouble("discount"));
 						n.setPrice(rs.getDouble("price"));
 						n.setCost();
+						n.setStock(rs.getInt("stock"));
 						n.setBrand(rs.getString("brand"));
 						n.setVersion(rs.getString("version"));
 						n.setUid(rs.getInt("uid"));
@@ -303,6 +305,7 @@ public class CartDao extends MainDao {
 						n.setDiscount(rs.getDouble("discount"));
 						n.setPrice(rs.getDouble("price"));
 						n.setCost();
+						n.setStock(rs.getInt("stock"));
 						n.setBrand(rs.getString("brand"));
 						n.setVersion(rs.getString("version"));
 						n.setUid(rs.getInt("uid"));
@@ -348,6 +351,7 @@ public class CartDao extends MainDao {
 						n.setDiscount(rs.getDouble("discount"));
 						n.setPrice(rs.getDouble("price"));
 						n.setCost();
+						n.setStock(rs.getInt("stock"));
 						n.setBrand(rs.getString("brand"));
 						n.setVersion(rs.getString("version"));
 						list.add(n);
@@ -359,7 +363,7 @@ public class CartDao extends MainDao {
 		return list;
 	}
 	public boolean mark(int sid){
-		String query = "UPDATE cart SET mark=1 WHERE sid=? AND request=1 AND mark=0 AND brought=0";
+		String query = "UPDATE cart SET mark=1 WHERE pid IN (SELECT pid FROM product WHERE sid=?) AND request=1 AND mark=0 AND brought=0";
 		try {
 			PreparedStatement pst = conn.prepareStatement(query);
 			pst.setInt(1, sid);
