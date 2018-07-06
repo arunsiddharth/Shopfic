@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.shopfic.model.Notification;
 import com.shopfic.model.Product;
 import com.shopfic.model.ProductDetailed;
+import com.shopfic.service.CartService;
 import com.shopfic.service.ProductService;
 
 @Controller
@@ -111,5 +113,42 @@ public class Seller {
 		product.setSid(Integer.parseInt(session.getAttribute("sid").toString()));
 		ps.updateProduct(product);
 		return new ModelAndView("redirect:/seller/index");
+	}
+	
+	@RequestMapping(value="notification",method=RequestMethod.GET)
+	public ModelAndView notifications(HttpServletRequest request, HttpServletResponse response){
+		ModelAndView mv = new ModelAndView("notification");
+		CartService cs = new CartService();
+		String view_requested = request.getParameter("view");
+		List<Notification> n;
+		HttpSession session = request.getSession();
+		mv.addObject("oos","false");
+		int sid = Integer.parseInt(session.getAttribute("sid").toString());
+		if(view_requested.equals("prf")){
+			mv.addObject("oos","false");
+			n=cs.notificationProductRequestFulfilled(sid);
+		}
+		else if(view_requested.equals("pr")){
+			mv.addObject("oos","false");
+			n=cs.notificationProductRequest(sid);
+		}
+		else if(view_requested.equals("prp")){
+			mv.addObject("oos","false");
+			n=cs.notificationProductRequestPending(sid);
+		}
+		else {
+			mv.addObject("oos","true");
+			n=cs.notificationOutOfStock(sid);
+		}
+		mv.addObject("notification",n);
+		return mv;
+	}
+	@RequestMapping(value="productsmark",method=RequestMethod.GET)
+	public ModelAndView mark(HttpServletRequest request, HttpServletResponse response){
+		HttpSession session = request.getSession();
+		int sid = Integer.parseInt(session.getAttribute("sid").toString());
+		CartService cs = new CartService();
+		cs.mark(sid);
+		return new ModelAndView("redirect:/notification?view=prp");
 	}
 }

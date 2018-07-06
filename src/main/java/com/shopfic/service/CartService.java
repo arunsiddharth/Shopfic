@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.shopfic.dao.CartDao;
 import com.shopfic.model.Cart;
+import com.shopfic.model.Notification;
 
 public class CartService {
 	public void addCart(Cart c){
@@ -40,5 +41,35 @@ public class CartService {
 		CartDao cd = new CartDao();
 		cd.connect();
 		cd.buyCart(uid, cod);
+	}
+	//notification services
+	public List<Notification> notificationProductRequestFulfilled(int sid){
+		CartDao cd = new CartDao();
+		cd.connect();
+		List<Notification> list = cd.getProductRequestFulfilled(sid);
+		return list;
+	}
+	public List<Notification> notificationProductRequest(int sid){
+		CartDao cd = new CartDao();
+		cd.connect();
+		List<Notification> list = cd.getProductRequest(sid);
+		return list;
+	}
+	public List<Notification> notificationProductRequestPending(int sid){
+		CartDao cd = new CartDao();
+		cd.connect();
+		List<Notification> list = cd.getProductRequestPending(sid);
+		return list;
+	}
+	public List<Notification> notificationOutOfStock(int sid){
+		CartDao cd = new CartDao();
+		cd.connect();
+		List<Notification> list = cd.getOutOfStock(sid);
+		return list;
+	}
+	public void mark(int sid){
+		CartDao cd = new CartDao();
+		cd.connect();
+		cd.mark(sid);
 	}
 }
