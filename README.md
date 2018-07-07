@@ -1,2 +1,0 @@
-# Shopfic
-Intern Project

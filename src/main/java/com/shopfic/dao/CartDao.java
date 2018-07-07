@@ -148,17 +148,29 @@ public class CartDao extends MainDao {
 		//update cart and also reduce stock and put date and transaction_od
 		int count=0;
 		String query_cart_stock = "SELECT count FROM cart WHERE pid=? AND uid=? AND request=0";
+		String query_stock_get = "SELECT stock FROM product WHERE pid=?"; 
 		String query_cart="UPDATE cart SET request=1, date_request=NOW(), cod=? WHERE pid=? AND uid=? AND request=0";
 		String query_cart_tid="UPDATE cart SET request=1, date_request=NOW(), transaction_id=? WHERE pid=? AND uid=? AND request=0";
-		
 		String query_stock = "UPDATE product SET stock=stock-? WHERE pid=?";
 		PreparedStatement pst;
+		int stock;
 		try {
 			pst = conn.prepareStatement(query_cart_stock);
 			pst.setInt(1, pid);
 			pst.setInt(2, uid);
 			ResultSet rs = pst.executeQuery();
 			if(rs.next())count = rs.getInt("count");
+			else return false;
+			pst = conn.prepareStatement(query_stock_get);
+			pst.setInt(1, pid);
+			rs = pst.executeQuery();
+			if(rs.next())stock=rs.getInt("stock");
+			else return false;
+			if(stock<count)return false;
+			pst = conn.prepareStatement(query_stock);
+			pst.setInt(1, count);
+			pst.setInt(2, pid);
+			pst.executeUpdate();
 			if(cod){
 				pst = conn.prepareStatement(query_cart);
 				pst.setInt(1, 1);
@@ -169,10 +181,6 @@ public class CartDao extends MainDao {
 			}
 			pst.setInt(2, pid);
 			pst.setInt(3, uid);
-			pst.executeUpdate();
-			pst = conn.prepareStatement(query_stock);
-			pst.setInt(1, count);
-			pst.setInt(2, pid);
 			pst.executeUpdate();
 			return true;
 		} catch (SQLException e) {

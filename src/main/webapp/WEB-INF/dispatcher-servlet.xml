@@ -4,21 +4,26 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/mvc
-	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
 	http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context-2.5.xsd">	
+	http://www.springframework.org/schema/context/spring-context.xsd">	
+	
 	
 	<!-- Annotation Driven -->
 	<ctx:annotation-config></ctx:annotation-config>
 	<ctx:component-scan base-package="com.shopfic.controller"></ctx:component-scan>
-	<mvc:annotation-driven/>
+	
 
 	<!-- View Resolver -->
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix"><value>/</value></property>
 		<property name="suffix"><value>.jsp</value></property>
 	</bean>
-
+	
+	
+	<mvc:resources mapping="/resources/**" location="/resources/maintheme/"  
+	cache-period="31556926"/>
+	<mvc:annotation-driven/>
 </beans>
