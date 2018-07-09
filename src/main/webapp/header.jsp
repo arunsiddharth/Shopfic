@@ -48,12 +48,12 @@
 	<div class="pull-right">
 <%
 		if(session.getAttribute("uid")==null){
-			out.print("<a href='login'>LOGIN</a>  ");
-			out.print("<a href='register'>REGISTER</a>");
+			out.print("<div class='pull-right'><a href='login'><span class='btn btn-mini btn-primary'><i class='icon-shopping-cart icon-white'></i> Login </span> </a></div>  ");
+			out.print("<div class='pull-right'><a href='register'><span class='btn btn-mini btn-primary'><i class='icon-shopping-cart icon-white'></i> Register </span> </a></div>");
 		}
 		else{
-			out.print("<div class='pull-right'><a href='viewcart?view=fresh'><span class='btn btn-mini btn-primary'><i class='icon-shopping-cart icon-white'></i> View your cart </span> </a></div>");
-			out.print("<a href='logout'>LOGOUT</a>");
+			out.print("<div class='pull-right'><a href='viewcart?view=fresh'><span class='btn btn-mini btn-primary'><i class='icon-shopping-cart icon-white'></i> View your cart </span> </a></div>    ");
+			out.print("<div class='pull-right'><a href='logout'><span class='btn btn-mini btn-primary'><i class='icon-shopping-cart icon-white'></i> Logout </span> </a></div>");
 		}
 %>
 	</div>
@@ -76,9 +76,9 @@
 		  <button type="submit" id="submitButton" class="btn btn-primary">Go</button>
     </form>
     <ul id="topMenu" class="nav pull-right">
-	 <li class=""><a href="special_offer.jsp">Specials Offer</a></li>
-	 <li class=""><a href="delivery.html">Delivery</a></li>
-	 <li class=""><a href="contact.html">Contact</a></li>
+	 <li class=""><a href="index.jsp">Specials Offer</a></li>
+	 <li class=""><a href="delivery.jsp">Delivery</a></li>
+	 <li class=""><a href="contact.jsp">Contact</a></li>
     </ul>
   </div>
 </div>

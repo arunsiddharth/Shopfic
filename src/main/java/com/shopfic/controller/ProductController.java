@@ -25,7 +25,7 @@ public class ProductController {
 		ModelAndView mv = new ModelAndView("index");
 		ProductService ps = new ProductService();
 		Map<String, Map<String,Integer> > list= ps.productList();
-		System.out.println(list);
+		//System.out.println(list);
 		mv.addObject("productlist",list);
 		List<Product> products = ps.productsLatest();
 		mv.addObject("products",products);
@@ -36,7 +36,7 @@ public class ProductController {
 		ModelAndView mv = new ModelAndView("index");
 		ProductService ps = new ProductService();
 		Map<String, Map<String,Integer> > list= ps.productList();
-		System.out.println(list);
+		//System.out.println(list);
 		mv.addObject("productlist",list);
 		List<Product> products = ps.productsCategory(request.getParameter("category"));
 		mv.addObject("products",products);
@@ -47,7 +47,7 @@ public class ProductController {
 		ModelAndView mv = new ModelAndView("index");
 		ProductService ps = new ProductService();
 		Map<String, Map<String,Integer> > list= ps.productList();
-		System.out.println(list);
+		//System.out.println(list);
 		mv.addObject("productlist",list);
 		List<Product> products = ps.productsSubcategory(request.getParameter("category"), request.getParameter("subcategory"));;
 		mv.addObject("products",products);

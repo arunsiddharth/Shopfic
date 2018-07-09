@@ -2,6 +2,7 @@ package com.shopfic.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.shopfic.model.Cart;
 import com.shopfic.service.CartService;
+import com.shopfic.service.ProductService;
 
 @Controller
 public class CartController {
@@ -41,6 +43,10 @@ public class CartController {
 		HttpSession session = request.getSession();
 		int uid=Integer.parseInt(session.getAttribute("uid").toString());
 		CartService cs = new CartService();
+		ProductService ps = new ProductService();
+		Map<String, Map<String,Integer> > list= ps.productList();
+		//System.out.println(list);
+		mv.addObject("productlist",list);
 		if(request.getParameter("view").equals("old")){cart = cs.viewCartOld(uid);}
 		else cart = cs.viewCartFresh(uid);
 		mv.addObject("cart",cart);
