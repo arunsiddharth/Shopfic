@@ -27,6 +27,10 @@
 		<input type="password" id="inputPassword1" name="password" required placeholder="Password">
 		</div>
 		<br/>
+		</div>
+		<div class="alert alert-block alert-error fade in">
+		<button type="button" class="close" data-dismiss="alert">×</button> ${e.message}
+	 </div>	
 	<div class="control-group">
 			<div class="controls">
 				<input class="btn btn-large btn-success" type="submit" value="Login" />

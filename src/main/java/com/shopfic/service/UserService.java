@@ -36,6 +36,10 @@ public class UserService {
 				return 3;
 			}
 	}
+	public void setSellerImage(int sid,String ip){
+		ud.connect();
+		ud.setSellerImage(sid, ip);
+	}
 	public int registerUser(User user,HttpSession session){
 		//try to register user
 		//if done then set session and return true
@@ -44,7 +48,8 @@ public class UserService {
 		int result = ud.register(user);
 		if(result==0){
 			//put in session
-			session.setAttribute("uid", ud.hm.get("uid"));
+			if(user.getRole().equals("true"))session.setAttribute("sid", ud.hm.get("sid"));
+			else session.setAttribute("uid", ud.hm.get("uid"));
 			session.setAttribute("firstname", ud.hm.get("firstname"));
 			return 0;
 		}

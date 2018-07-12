@@ -41,11 +41,23 @@ public class UserDao extends MainDao{
 			return 3;
 		}	
 	}
+	public void setSellerImage(int sid,String image_path){
+		String query_seller = "UPDATE seller SET image_path=? WHERE uid=?";
+		PreparedStatement pst;
+		try {
+			pst = conn.prepareStatement(query_seller);
+			pst.setString(1, image_path);
+			pst.setInt(2, sid);
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("In UserDao: setSellerImage"+e);
+		}
+	}
 	
 	public int register(User user){
 		String query = "INSERT INTO user(title,firstname,lastname,email,password,dob,address1,address2,city,state,country,zip,homephone,mobilephone,additional_info,role) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		String query_id = "SELECT uid,firstname FROM user WHERE email=?";
-		String query_seller = "INSERT INTO seller(uid,company,id_proof,image_path) VALUES(?,?,?,?)";
+		String query_seller = "INSERT INTO seller(uid,company,id_proof) VALUES(?,?,?)";
 		
 		PreparedStatement pst;
 		try {
@@ -81,12 +93,13 @@ public class UserDao extends MainDao{
 				hm.put("firstname", rs.getString("firstname"));
 				if(user.getRole().equals("true")){
 					//update seller table
+					hm.put("sid", rs.getString("uid"));
 					System.out.println("trying to make him seller");
 					PreparedStatement pst3 = conn.prepareStatement(query_seller);
 					pst3.setInt(1, Integer.parseInt(rs.getString(1)));
 					pst3.setString(2, user.getSeller().getCompany());
 					pst3.setString(3, user.getSeller().getId_proof());
-					pst3.setString(4, user.getSeller().getImage_path());
+					//pst3.setString(4, user.getSeller().getImage_path());
 					int count2 = pst3.executeUpdate();
 					if(count2==1){
 						return 0;

@@ -1,5 +1,6 @@
 package com.shopfic.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +76,9 @@ public class ProductController {
 		ProductDetailed product = new ProductDetailed();
 		product = ps.getProductDetailed(pid);
 		mv.addObject("product",product);
+		if(product.getImages().isEmpty())product.setImages(new ArrayList<String>(){{
+		    add("tmp.png");
+		}});
 		//Add product rating
 		Rating rating = ps.productRating(pid);
 		mv.addObject("ratings", rating);

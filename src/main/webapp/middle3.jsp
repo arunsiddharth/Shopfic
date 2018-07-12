@@ -39,7 +39,7 @@
 			<c:forEach items="${products}" var="product">
 				<li class="span3">
 			  	<div class="thumbnail">
-					<a href="product_details.html"><img src="<c:url value="/resources/themes/images/products/3.jpg"/>" alt=""/></a>
+					<a href="viewproduct?pid=${product.pid}"><img src="<c:url value="/resources/themes/images/products/${product.image_path}"/>" alt=""/></a>
 					<div class="caption">
 				  		<h5>${product.name}</h5><br/>
 				  		<h5>${product.cost}</h5>

@@ -19,7 +19,8 @@
 				<c:if test="${fn:length(cart) lt 1}">
    					<h3>Please Buy Some Product First</h3>
 				</c:if>
-<c:if test="${fn:length(cart) gt 0}">
+				
+<c:if test="${view=='new'}">
 	<form class="form-horizontal" action="buycart" method="post">
 		<div class="control-group">
 					<label class="control-label"><span>Mode of Payment :</span></label>
@@ -35,18 +36,23 @@
 </c:if>
 <hr class="soft">
 <div class="tab-pane" id="listView">	
-<c:forEach items="${cart}" var="cart">	
+<c:forEach items="${cart}" var="carto">	
 		<div class="row">	  
 			<div class="span8">		
-				Product : ${cart.name}<br/>
-				Cost : ${cart.cost}<br/>
-				Amount You Wish : ${cart.count}<br/>
-				<c:if test="${cart.request==0}">
+				Product : <a href="viewproduct?pid=${product.pid}">${carto.name}</a><br/>
+				Cost : ${carto.cost}<br/>
+				Amount You Wish : ${carto.count}<br/>
+				Mode of Payment : <c:if test="${carto.cod==1}">COD</c:if><c:if test="${carto.cod==0}">Online</c:if><br/>
+				<c:if test="${carto.request==1}">
+				Dispatched : <c:if test="${carto.mark==1}">Yes</c:if><c:if test="${carto.mark==0}">No</c:if><br/>
+				Brought : <c:if test="${carto.brought==1}">Yes</c:if><c:if test="${carto.brought==0}">No, Arriving Soon!</c:if>
+				</c:if>
+				<c:if test="${carto.request==0}">
 	<form action="updatecart" method="post">
-		Update Form : <input type="text" name="pid" value="${cart.pid}" style="display:none"/>
+		Update Form : <input type="text" name="pid" value="${carto.pid}" style="display:none"/>
 		Count : <input type="number" min=0 max=50 name="count"/>
 		<button type="submit" class="btn btn-medium btn-primary"> Update <i class=" icon-shopping-cart"></i></button>
-		<button class="btn btn-medium btn-primary"><a href="deletecartproduct?pid=${cart.pid}">Delete From Cart</a> <i class=" icon-shopping-cart"></i></button>
+		<button class="btn btn-medium btn-primary"><a href="deletecartproduct?pid=${carto.pid}">Delete From Cart</a> <i class=" icon-shopping-cart"></i></button>
 	</form>
 				</c:if>
 			</div>

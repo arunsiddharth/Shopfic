@@ -14,7 +14,7 @@
     </ul>
 	<h3> Registration</h3>	
 	<div class="well">
-	<form class="form-horizontal" action="register" method="POST">
+	<form class="form-horizontal" action="register" method="POST"  enctype="multipart/form-data">
 		<h4>Your personal information</h4>
 		<div class="control-group">
 		<label class="control-label">Title <sup>*</sup></label>
@@ -149,7 +149,7 @@
 		<div class="control-group">
 			<label class="control-label" for="company">Image of Proof</label>
 			<div class="controls">
-			  <input type="text" name="seller.image_path" required/>
+			  <input type="file" name="seller.image_path" required/>
 			</div>
 		</div>
 		<div class="control-group">

@@ -1,5 +1,9 @@
 package com.shopfic.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +15,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.shopfic.model.Notification;
@@ -22,6 +28,9 @@ import com.shopfic.service.ProductService;
 @Controller
 @RequestMapping("seller")
 public class Seller {
+	private static String UPLOADED_FOLDER = "C:\\Users\\aruna\\EclipseMarsWorkspace\\Eagle\\src\\main\\webapp\\resources\\maintheme\\themes\\images\\products\\";
+
+	
 	@RequestMapping("index")
 	public ModelAndView sellerIndex(HttpServletRequest request, HttpServletResponse response){
 		HttpSession session= request.getSession();
@@ -43,8 +52,9 @@ public class Seller {
 		mv.addObject("list",hm);
 		return mv;
 	}
+	
 	@RequestMapping(value="add", method=RequestMethod.POST)
-	public ModelAndView doAddProduct(HttpServletRequest request, HttpServletResponse response){
+	public ModelAndView doAddProduct(@RequestParam("images") MultipartFile[] files, HttpServletRequest request, HttpServletResponse response){
 		int sid = Integer.parseInt(request.getSession().getAttribute("sid").toString());
 		System.out.println("SID IS"+sid);
 		ProductService ps=new ProductService();
@@ -59,12 +69,32 @@ public class Seller {
 		prod.setVersion(request.getParameter("version"));
 		prod.setShort_description(request.getParameter("short_description"));
 		prod.setFeatures(request.getParameter("features"));
+		prod.setSid(sid);
+		int tpid = ps.addProduct(prod);
+		
 		//prod.setImage_path(request.getParameter("images"));
 		List<String> images = new ArrayList<String>();
-		images.add(request.getParameter("images"));
+		// Get the file and save it somewhere
+        int c=1;
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) {
+                continue;
+            }
+            try {
+                byte[] bytes = file.getBytes();
+                Path path = Paths.get(UPLOADED_FOLDER + tpid+"-"+c+"."+file.getContentType().substring(6));
+                Files.write(path, bytes);
+                images.add(tpid+"-"+c+"."+file.getContentType().substring(6));
+                //System.out.println(tpid+"-"+c+"."+file.getContentType().substring(6));
+                c+=1;
+                if(c==5)break;
+            } catch (IOException e) {
+                System.out.println("Image I/O Exception"+e);
+            }
+        }
+        //if(images.isEmpty())images.add("tmp.png");
 		prod.setImages(images);
-		prod.setSid(sid);
-		ps.addProduct(prod);
+		ps.addImage(tpid, images);
 		return new ModelAndView("redirect:/seller/index");
 	}
 	@RequestMapping(value="delete", method=RequestMethod.GET)

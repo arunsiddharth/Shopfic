@@ -10,7 +10,11 @@ import com.shopfic.model.ProductDetailed;
 import com.shopfic.model.Rating;
 
 public class ProductService {
-	
+	public int getNewPid(){
+		ProductDao pd= new ProductDao();
+		pd.connect();
+		return pd.pidMaker();
+	}
 	public Map<String,Map<String,Integer> > productList(){
 		//give list of categories and subcategories
 		Map<String,Map<String,Integer> > hm=null;
@@ -65,12 +69,17 @@ public class ProductService {
 		prod = pd.getProductDetailed(pid);
 		return prod;
 	}
-	
-	public void addProduct(ProductDetailed p){
+	public void addImage(int pid, List<String> images){
 		ProductDao pd = new ProductDao();
 		pd.connect();
-		if(pd.addProduct(p))System.out.println("Added successfully");//return true on success addition
-		else System.out.println("Product addition failure");
+		pd.updateImage(images, pid);
+	}
+	public int addProduct(ProductDetailed p){
+		ProductDao pd = new ProductDao();
+		pd.connect();
+		return pd.addProduct(p);
+		/*if(pd.addProduct(p))System.out.println("Added successfully");//return true on success addition
+		else System.out.println("Product addition failure");*/
 	}
 	public void updateProduct(ProductDetailed prod){
 		//TODO 

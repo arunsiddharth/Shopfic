@@ -15,12 +15,19 @@ import com.shopfic.model.User;
 public class CartDao extends MainDao {
 	public boolean addCart(Cart c){
 		String query_select = "SELECT * FROM cart WHERE uid=? AND pid=? AND request=0";
+		String query_stock =  "SELECT stock FROM product WHERE pid = ?";
 		String query_update = "UPDATE cart SET count=count+? WHERE uid=? AND pid=? AND request=0";
 		String query_cart="INSERT INTO cart(uid,pid,count) VALUES(?,?,?)";
 		PreparedStatement pst;
 		ResultSet rs;
 		try {
 			//System.out.println(c);
+			pst = conn.prepareStatement(query_stock);
+			pst.setInt(1, c.getPid());
+			rs = pst.executeQuery();
+			rs.next();
+			int stock = rs.getInt("stock");
+			if(stock < c.getCount())return false;
 			pst = conn.prepareStatement(query_select);
 			pst.setInt(1, c.getUid());
 			pst.setInt(2, c.getPid());
@@ -59,6 +66,7 @@ public class CartDao extends MainDao {
 			ResultSet rs = pst.executeQuery();
 			while(rs.next()){
 				c = new Cart();
+				c.setCod(rs.getInt("cod"));
 				c.setPid(rs.getInt("pid"));
 				c.setUid(rs.getInt("uid"));
 				c.setCount(rs.getInt("count"));
@@ -130,9 +138,16 @@ public class CartDao extends MainDao {
 		return false;
 	}
 	public boolean updateCartProduct(int uid,int pid,int count){
+		String query_st = "SELECT stock FROM product WHERE pid=?";
 		String query_cart="UPDATE cart SET count=? WHERE pid=? AND uid=? AND request=0";
 		try {
-			PreparedStatement pst = conn.prepareStatement(query_cart);
+			PreparedStatement pst = conn.prepareStatement(query_st);
+			pst.setInt(1, pid);
+			ResultSet rs  = pst.executeQuery();
+			rs.next();
+			int stock = rs.getInt("stock");
+			if(count>stock)return false;
+			pst = conn.prepareStatement(query_cart);
 			pst.setInt(1, count);
 			pst.setInt(2, pid);
 			pst.setInt(3, uid);

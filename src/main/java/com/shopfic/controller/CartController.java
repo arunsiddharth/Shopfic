@@ -47,8 +47,8 @@ public class CartController {
 		Map<String, Map<String,Integer> > list= ps.productList();
 		//System.out.println(list);
 		mv.addObject("productlist",list);
-		if(request.getParameter("view").equals("old")){cart = cs.viewCartOld(uid);}
-		else cart = cs.viewCartFresh(uid);
+		if(request.getParameter("view").equals("old")){cart = cs.viewCartOld(uid);mv.addObject("view","old");}
+		else {cart = cs.viewCartFresh(uid);mv.addObject("view","new");}
 		mv.addObject("cart",cart);
 		return mv;
 	}

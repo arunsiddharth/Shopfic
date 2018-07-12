@@ -13,20 +13,20 @@
     </ul>	
 	<div class="row">	  
 			<div id="gallery" class="span3">
-            <a href="<c:url value="/resources/themes/images/products/large/f1.jpg"/>" title="Fujifilm FinePix S2950 Digital Camera">
-				<img src="<c:url value="/resources/themes/images/products/large/3.jpg"/>" style="width:100%" alt="Fujifilm FinePix S2950 Digital Camera"/>
+            <a href="<c:url value="/resources/themes/images/products/${product.images[0]}"/>" title="Fujifilm FinePix S2950 Digital Camera">
+				<img src="<c:url value="/resources/themes/images/products/${product.images[0]}"/>" style="width:100%" alt="No Image"/>
             </a>
 			<div id="differentview" class="moreOptopm carousel slide">
                 <div class="carousel-inner">
                   <div class="item active">
-                   <a href="<c:url value="/resources/themes/images/products/large/f1.jpg"/>"> <img style="width:29%" src="<c:url value="/resources/themes/images/products/large/f1.jpg"/>" alt=""/></a>
-                   <a href="<c:url value="/resources/themes/images/products/large/f2.jpg"/>"> <img style="width:29%" src="<c:url value="/resources/themes/images/products/large/f2.jpg"/>" alt=""/></a>
-                   <a href="<c:url value="/resources/themes/images/products/large/f3.jpg"/>" > <img style="width:29%" src="<c:url value="/resources/themes/images/products/large/f3.jpg"/>" alt=""/></a>
+                   <c:forEach items="${product.images}" var="image">
+                   <a href="<c:url value="/resources/themes/images/products/${image}"/>"> <img style="width:29%" src="<c:url value="/resources/themes/images/products/${image}"/>" alt=""/></a>
+                   </c:forEach>
                   </div>
                   <div class="item">
-                   <a href="<c:url value="/resources/themes/images/products/large/f3.jpg"/>" > <img style="width:29%" src="<c:url value="/resources/themes/images/products/large/f3.jpg"/>" alt=""/></a>
-                   <a href="<c:url value="/resources/themes/images/products/large/f1.jpg"/>"> <img style="width:29%" src="<c:url value="/resources/themes/images/products/large/f1.jpg"/>" alt=""/></a>
-                   <a href="<c:url value="/resources/themes/images/products/large/f2.jpg"/>"> <img style="width:29%" src="<c:url value="/resources/themes/images/products/large/f2.jpg"/>" alt=""/></a>
+                   <c:forEach items="${product.images}" var="image">
+                   <a href="<c:url value="/resources/themes/images/products/${image}"/>"> <img style="width:29%" src="<c:url value="/resources/themes/images/products/${image}"/>" alt=""/></a>
+                   </c:forEach>
                   </div>
                 </div>
               

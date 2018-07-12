@@ -14,6 +14,20 @@ import com.shopfic.model.ProductDetailed;
 import com.shopfic.model.Rating;
 
 public class ProductDao extends MainDao{
+	@Deprecated
+	public int pidMaker(){
+		String query = "SELECT pid FROM product order by pid DESC LIMIT 1";
+		Statement st;
+		try {
+			st = conn.createStatement();
+			ResultSet rs = st.executeQuery(query);
+			if(rs.next())return rs.getInt("pid");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao : pidMaker"+e);
+		}
+		return 0;
+	}
 	
 	public Map<String,Map<String,Integer> > getList(){
 		//Returns list of categories and subcategories
@@ -48,9 +62,24 @@ public class ProductDao extends MainDao{
 	public boolean updateProduct(ProductDetailed prod){
 		//MUST GIVE ORIGINAL + MODIFICATION;
 		int pid = prod.getPid();
+		int newpid =addProduct(prod);
+		updateImage(prod.getImages(),newpid);
+		updateCarts(pid,newpid);
 		deleteProduct(pid);
-		addProduct(prod);
 		return true;
+	}
+	public void updateCarts(int oldPid,int newPid){
+		String query = "UPDATE cart SET pid=? WHERE pid=?";
+		PreparedStatement pst;
+		try {
+			pst = conn.prepareStatement(query);
+			pst.setInt(1, newPid);
+			pst.setInt(2, oldPid);
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In UpdateCart : "+e);
+		}	
 	}
 	public ProductDetailed getProductDetailed(int pid){
 		ProductDetailed pd = new ProductDetailed();
@@ -104,8 +133,24 @@ public class ProductDao extends MainDao{
 		}
 		return null;
 	}
-	
-	public boolean addProduct(ProductDetailed p){
+	public boolean updateImage(List<String> images,int pid){
+		String query_images = "INSERT INTO images(pid,path) VALUES(?,?)";
+		PreparedStatement pst;
+		try {
+			pst = conn.prepareStatement(query_images);
+			pst.setInt(1, pid);
+			for(String img:images){
+				pst.setString(2, img);
+				pst.executeUpdate();
+			}
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("In Product Dao:updateImages"+e);
+		}
+		return false;
+	}
+	public int addProduct(ProductDetailed p){
 		//insert into product and images + update subcategory
 		//get csid
 		int cid,csid,pid;
@@ -113,7 +158,7 @@ public class ProductDao extends MainDao{
 		String query_csid = "SELECT csid FROM subcategory WHERE cid=? AND name=?";
 		String query_product = "INSERT INTO product(name,price,discount,features,stock,csid,brand,version,sid,short_description) VALUES(?,?,?,?,?,?,?,?,?,?)";
 		String query_pid = "SELECT pid FROM product ORDER BY pid DESC LIMIT 1";
-		String query_images = "INSERT INTO images(pid,path) VALUES(?,?)";
+		//String query_images = "INSERT INTO images(pid,path) VALUES(?,?)";
 		String query_subcategory= "UPDATE subcategory SET count=count+1 WHERE name=?";
 		try{
 
@@ -151,23 +196,23 @@ public class ProductDao extends MainDao{
 			rs = st.executeQuery(query_pid);
 			rs.next();
 			pid = rs.getInt(1);
-			pst = conn.prepareStatement(query_images);
+			/*pst = conn.prepareStatement(query_images);
 			pst.setInt(1, pid);
 			for(String s:p.getImages()){
 				pst.setString(2, s);
 				pst.executeUpdate();
 			}
-			pst.close();
+			pst.close();*/
 			pst = conn.prepareStatement(query_subcategory);
 			pst.setString(1, p.getSubcategory());
 			pst.executeUpdate();
 			//pst.close();
 			//conn.close();
-			return true;
+			return pid;
 		}catch (SQLException e) {
 			System.out.println("In Product Dao : addProduct : "+e);
 		}
-		return false;
+		return 0;
 	}
 	
 	public boolean deleteProduct(int pid){
@@ -180,17 +225,17 @@ public class ProductDao extends MainDao{
 			pst = conn.prepareStatement(query);
 			pst.setInt(1, pid);
 			ResultSet rs = pst.executeQuery();
+			System.out.println("1");
 			rs.next();
 			csid = rs.getInt("csid");
 			pst = conn.prepareStatement(query_del);
 			pst.setInt(1, pid);
 			pst.executeUpdate();
+			System.out.println("2");
 			pst = conn.prepareStatement(query_subcategory);
 			pst.setInt(1, csid);
 			pst.executeUpdate(query_subcategory);
-			//st.close();
-			//pst.close();
-			//conn.close();
+			System.out.println("3");
 			return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -218,7 +263,13 @@ public class ProductDao extends MainDao{
 			pst = conn.prepareStatement(query_image);
 			pst.setInt(1, pid);
 			rs = pst.executeQuery();
-			if(rs.next())prod.setImage_path(rs.getString("path"));
+			List<String> images = new ArrayList<String>();
+			
+			while(rs.next()){
+				images.add(rs.getString("path"));
+				prod.setImage_path(rs.getString("path"));
+			}
+			
 			//st.executeUpdate(query_subcategory);
 			//st.close();
 			return prod;
@@ -268,30 +319,33 @@ public class ProductDao extends MainDao{
 	public List<Product> getProductsCategory(String category){
 		List<Product> list = new ArrayList<Product>();
 		int cid,csid;
-		String query_cid = "SELECT cid FROM category WHERE name=?";
-		String query_csid = "SELECT csid FROM subcategory WHERE cid=?";
+		String query_cid = "SELECT * FROM category WHERE name=?";
+		String query_csid = "SELECT * FROM subcategory WHERE cid=?";
 		String query_pid = "SELECT pid FROM product WHERE csid=?";
 		try {
 			PreparedStatement pst = conn.prepareStatement(query_cid);
 			PreparedStatement pst2 = conn.prepareStatement(query_pid);
 			pst.setString(1, category);
 			ResultSet rs = pst.executeQuery();
+			
 			ResultSet rs2;
 			rs.next();
 			cid = rs.getInt("cid");
+			System.out.println(cid);
 			pst.close();
 			pst = conn.prepareStatement(query_csid);
 			pst.setInt(1, cid);
 			rs = pst.executeQuery();
 			while(rs.next()){
 				csid = rs.getInt("csid");
+				System.out.println("csid "+csid);
 				pst2 = conn.prepareStatement(query_pid);
 				pst2.setInt(1, csid);
-				rs2 = pst.executeQuery();
+				rs2 = pst2.executeQuery();
 				while(rs2.next()){
+					System.out.println("pid "+rs2.getInt("pid"));
 					list.add(getProduct(rs2.getInt("pid")));
 				}
-				pst2.close();
 			}
 			//pst.close();
 			//conn.close();
@@ -300,7 +354,7 @@ public class ProductDao extends MainDao{
 			// TODO Auto-generated catch block
 			System.out.println("In Product Dao : getProductsCategory : "+e);
 		}
-		return null;
+		return list;
 	}
 	public List<Product> getProductsSubcategory(String category,String subcategory){
 		List<Product> list = new ArrayList<Product>();
